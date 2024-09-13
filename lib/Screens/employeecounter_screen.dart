@@ -1,14 +1,19 @@
+import 'package:employee_prediction/Providers/Employee_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:employee_prediction/Providers/employee_provider.dart';
 
 class EmployeeCounterScreen extends StatefulWidget {
+  static const String routeName = '/employee_counter';
+
   @override
   _EmployeeCounterScreenState createState() => _EmployeeCounterScreenState();
 }
 
 class _EmployeeCounterScreenState extends State<EmployeeCounterScreen> {
   final TextEditingController _distanceController = TextEditingController();
+  bool _isLoading = false;
+  String? _errorMessage;
+  List<String>? _employeeList;
 
   @override
   void dispose() {
@@ -16,14 +21,37 @@ class _EmployeeCounterScreenState extends State<EmployeeCounterScreen> {
     super.dispose();
   }
 
+  Future<void> _fetchEmployees(double distance) async {
+    final employeeProvider =
+        Provider.of<EmployeeProvider>(context, listen: false);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await employeeProvider.fetchEmployeesWithinDistance(distance);
+
+      setState(() {
+        _employeeList = employeeProvider.filteredEmployeeIds;
+      });
+    } catch (error) {
+      setState(() {
+        _errorMessage = 'Failed to fetch employees: $error';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final employeeProvider = Provider.of<EmployeeProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor:
-            Colors.blueAccent, // Set the background color similar to HomeScreen
+            Colors.blueAccent, // Match the HomeScreen background color
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -37,7 +65,7 @@ class _EmployeeCounterScreenState extends State<EmployeeCounterScreen> {
             ),
             SizedBox(height: 5),
             Text(
-              'Enter distance to fetch employee IDs',
+              'Enter a distance to fetch employees',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.white70,
@@ -49,8 +77,8 @@ class _EmployeeCounterScreenState extends State<EmployeeCounterScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Input field to take distance
             TextField(
               controller: _distanceController,
               keyboardType: TextInputType.number,
@@ -59,34 +87,36 @@ class _EmployeeCounterScreenState extends State<EmployeeCounterScreen> {
                 border: OutlineInputBorder(),
               ),
               onSubmitted: (value) {
-                double? distance = double.tryParse(value);
+                final distance = double.tryParse(value);
                 if (distance != null) {
-                  employeeProvider.fetchEmployeesWithinDistance(distance);
+                  _fetchEmployees(distance);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Please enter a valid distance')),
+                    SnackBar(
+                      content: Text('Please enter a valid distance'),
+                    ),
                   );
                 }
               },
             ),
             SizedBox(height: 20),
-            // Display the filtered employee IDs in a scrollable list
-            Expanded(
-              child: employeeProvider.filteredEmployeeIds.isNotEmpty
-                  ? ListView.builder(
-                      itemCount: employeeProvider.filteredEmployeeIds.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(
-                              'Employee ID: ${employeeProvider.filteredEmployeeIds[index]}'),
-                        );
-                      },
-                    )
-                  : Center(
-                      child: Text(
-                          'No employees found within the specified distance'),
-                    ),
-            ),
+            if (_isLoading)
+              Center(child: CircularProgressIndicator())
+            else if (_errorMessage != null)
+              Center(child: Text(_errorMessage!))
+            else if (_employeeList != null && _employeeList!.isNotEmpty)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _employeeList!.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text('Employee ID: ${_employeeList![index]}'),
+                    );
+                  },
+                ),
+              )
+            else
+              Center(child: Text('No employees found')),
           ],
         ),
       ),

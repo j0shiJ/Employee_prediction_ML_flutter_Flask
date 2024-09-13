@@ -29,15 +29,37 @@ class EmployeeProvider extends ChangeNotifier {
 // New method to fetch employees within a distance
   Future<void> fetchEmployeesWithinDistance(double distance) async {
     try {
-      final response = await http.get(
-          Uri.parse('$baseUrl/employees_within_distance?distance=$distance'));
+      final url = '$baseUrl/employee_within_distance?distance=$distance';
+      print('Fetching from URL: $url');
+
+      final response = await http.get(Uri.parse(url));
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
-        final List<dynamic> ids = data['employee_ids'] as List<dynamic>;
-        _filteredEmployeeIds = ids.map((id) => id.toString()).toList();
-        notifyListeners();
+        print('Parsed data: $data');
+
+        // Check if employee_ids exist and are not null
+        if (data.containsKey('employee_ids') && data['employee_ids'] != null) {
+          final List<dynamic> ids = data['employee_ids'] as List<dynamic>;
+
+          // Check if the list is empty and handle it
+          if (ids.isNotEmpty) {
+            _filteredEmployeeIds = ids.map((id) => id.toString()).toList();
+            print('Filtered employee IDs: $_filteredEmployeeIds');
+            notifyListeners(); // Notify the UI of changes
+          } else {
+            print('No employee IDs found.');
+            throw Exception(
+                'No employees found within the specified distance.');
+          }
+        } else {
+          throw Exception('Invalid response: Missing employee_ids');
+        }
       } else {
+        print('Error: Failed with status code ${response.statusCode}');
         throw Exception('Failed to fetch filtered employee IDs');
       }
     } catch (e) {

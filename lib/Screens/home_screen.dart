@@ -1,7 +1,9 @@
 import 'package:employee_prediction/Providers/Employee_provider.dart';
+import 'package:employee_prediction/Screens/Employee_screen.dart';
+import 'package:employee_prediction/Screens/employeecounter_screen.dart';
+// Import the EmployeeCounterScreen
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'employee_screen.dart'; // Update with the correct path
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
@@ -166,7 +168,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ],
-                        )
+                        ),
+                        SizedBox(height: 20), // Add space before the button
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              EmployeeCounterScreen.routeName,
+                            );
+                          },
+                          child: Text('Go to Employee Counter'),
+                        ),
                       ],
                     ),
                   );
