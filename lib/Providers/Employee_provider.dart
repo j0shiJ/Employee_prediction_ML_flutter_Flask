@@ -30,16 +30,11 @@ class EmployeeProvider extends ChangeNotifier {
   Future<void> fetchEmployeesWithinDistance(double distance) async {
     try {
       final url = '$baseUrl/employee_within_distance?distance=$distance';
-      print('Fetching from URL: $url');
 
       final response = await http.get(Uri.parse(url));
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
-        print('Parsed data: $data');
 
         // Check if employee_ids exist and are not null
         if (data.containsKey('employee_ids') && data['employee_ids'] != null) {
@@ -48,10 +43,9 @@ class EmployeeProvider extends ChangeNotifier {
           // Check if the list is empty and handle it
           if (ids.isNotEmpty) {
             _filteredEmployeeIds = ids.map((id) => id.toString()).toList();
-            print('Filtered employee IDs: $_filteredEmployeeIds');
+
             notifyListeners(); // Notify the UI of changes
           } else {
-            print('No employee IDs found.');
             throw Exception(
                 'No employees found within the specified distance.');
           }
@@ -59,7 +53,6 @@ class EmployeeProvider extends ChangeNotifier {
           throw Exception('Invalid response: Missing employee_ids');
         }
       } else {
-        print('Error: Failed with status code ${response.statusCode}');
         throw Exception('Failed to fetch filtered employee IDs');
       }
     } catch (e) {
@@ -76,7 +69,6 @@ class EmployeeProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
-        print("Response Body: $data"); // Debugging log
 
         // Extract the list of locations from the 'locations' field
         final List<dynamic> locations = data['locations'];
