@@ -52,7 +52,7 @@ class _EmployeeCounterScreenState extends State<EmployeeCounterScreen> {
       appBar: AppBar(
         backgroundColor:
             Colors.blueAccent, // Match the HomeScreen background color
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -82,7 +82,7 @@ class _EmployeeCounterScreenState extends State<EmployeeCounterScreen> {
             TextField(
               controller: _distanceController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Enter Distance (in meters)',
                 border: OutlineInputBorder(),
               ),
@@ -92,16 +92,16 @@ class _EmployeeCounterScreenState extends State<EmployeeCounterScreen> {
                   _fetchEmployees(distance);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('Please enter a valid distance'),
                     ),
                   );
                 }
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             if (_isLoading)
-              Center(child: CircularProgressIndicator())
+              const Center(child: CircularProgressIndicator())
             else if (_errorMessage != null)
               Center(child: Text(_errorMessage!))
             else if (_employeeList != null && _employeeList!.isNotEmpty)
@@ -116,7 +116,7 @@ class _EmployeeCounterScreenState extends State<EmployeeCounterScreen> {
                 ),
               )
             else
-              Center(child: Text('No employees found')),
+              const Center(child: Text('No employees found')),
           ],
         ),
       ),

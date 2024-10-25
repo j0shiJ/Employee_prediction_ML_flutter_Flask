@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent, // Set a background color
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text(
                   'Total Employees: ${employeeProvider.employeeIds.length}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -94,15 +94,15 @@ class _HomeScreenState extends State<HomeScreen> {
               future: Future.value(employeeProvider.employeeIds),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData ||
                     employeeProvider.employeeIds.isEmpty) {
-                  return Center(child: Text('No employee IDs found'));
+                  return const Center(child: Text('No employee IDs found'));
                 } else {
                   return Container(
-                    padding: EdgeInsets.all(11),
+                    padding: const EdgeInsets.all(11),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             DropdownButton<String>(
-                              hint: Text('Select Employee ID'),
+                              hint: const Text('Select Employee ID'),
                               value: employeeProvider.selectedEmployeeId,
                               onChanged: (String? newValue) {
                                 if (newValue != null) {
@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: 200,
                               child: TextField(
                                 controller: _searchController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   labelText: 'Search Employee ID',
                                   border: OutlineInputBorder(),
                                 ),
@@ -158,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     );
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
+                                      const SnackBar(
                                         content: Text(
                                             'Employee ID not found in the list'),
                                       ),
@@ -169,7 +169,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20), // Add space before the button
+                        const SizedBox(
+                            height: 20), // Add space before the button
                         ElevatedButton(
                           onPressed: () {
                             Navigator.pushNamed(
@@ -177,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               EmployeeCounterScreen.routeName,
                             );
                           },
-                          child: Text('Go to Employee Counter'),
+                          child: const Text('Go to Employee Counter'),
                         ),
                       ],
                     ),
